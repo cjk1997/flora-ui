@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 import { PlantContext } from './context/PlantContext';
 import { Plants } from './pages/Plants';
+import { EditPlant } from './pages/EditPlant';
 
 function App() {
   const { Provider } = PlantContext;
   const [plants, setPlants] = useState([]);
+  // const [plant, setPlant] = useState([]);
   const [products, setProducts] = useState([]);
 
   const getPlants = () => {
@@ -16,12 +18,32 @@ function App() {
       .catch(err => err);
   };
 
+  // const getPlant = () => {
+  //   if (localStorage.getItem('plant')) {
+  //     const plant = JSON.parse(localStorage.getItem('plant')).plant;
+  //     setPlant(plant);
+  //   };
+  // };
+
   const getProducts = () => {
     const url = process.env.REACT_APP_PRODUCTS_URL;
     fetch(`${url}`)
       .then(response => response.json())
       .then(data => setProducts(data))
       .catch(err => err);
+  };
+
+  const EditPlantRoute = ({ children, ...rest }) => {
+    return (
+      <Route
+        {...rest}
+        render = {({ location }) => 
+          localStorage.getItem('plant') ? (children) :
+          (<Redirect to={{ pathname: '/',
+          state: { from: location }}} />)
+        }
+      />
+    );
   };
 
   useEffect(() => {getPlants(); getProducts()}, []);
@@ -31,6 +53,9 @@ function App() {
       <Router>
         <Switch>
           <Route exact path='/' component={Plants} />
+          <EditPlantRoute exact path='/plant'>
+            <EditPlant />
+          </EditPlantRoute>
         </Switch>
       </Router>
     </Provider>
