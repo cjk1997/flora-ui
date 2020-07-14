@@ -44,6 +44,7 @@ export const Plants = () => {
     const [editRedirect, setEditRedirect] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [backdropOpen, setBackdropOpen] = useState(false);
+    const [deleteID, setDeleteID] = useState('');
     const [deleteSuccess, setDeleteSuccess] = useState(false);
     const [deleteFailure, setDeleteFailure] = useState(false);
     const [expanded, setExpanded] = useState(-1);
@@ -76,9 +77,10 @@ export const Plants = () => {
         setDialogOpen(false);
     };
 
-    const handleDeleteModalOpen = () => {
-        setAnchorEl(null);
+    const handleDeleteModalOpen = (id) => {
+        handleMenuClose();
         setDialogOpen(true);
+        setDeleteID(id);
     };
 
     const handleDeleteSuccess = () => {
@@ -100,13 +102,13 @@ export const Plants = () => {
         setBackdropOpen(false);
     };
 
-    const handleDelete = (id) => {
+    const handleDelete = () => {
         setDialogOpen(false);
         setBackdropOpen(true);
         setAnchorEl(null);
 
         const url = process.env.REACT_APP_PLANTS_URL;
-        fetch(`${url}/${id}`, {
+        fetch(`${url}/${deleteID}`, {
             method: 'DELETE' })
             .then(response => {
                 if (response.status === 200) {
@@ -114,6 +116,7 @@ export const Plants = () => {
                 } else {
                     handleDeleteFailure();
                 }})
+            .then(setDeleteID(''))
             .catch(err => err);
     }
 
@@ -138,154 +141,141 @@ export const Plants = () => {
         });
 
         return (
-            <Card className={classes.card}>
-                <CardHeader 
-                    avatar={
-                        <Avatar className={classes.avatar} style={{ width: '70px', height: '70px', marginRight: '20px', backgroundColor: "#4caf50" }}>
-                            <FontAwesomeIcon className={classes.seedling} icon={faSeedling} size="2x" />
-                        </Avatar>
-                    }
-                    action={
-                        <IconButton onClick={handleMenuOpen} style={{ marginTop: '14px' }}>
-                            <MoreVertIcon style={{ fontSize: '35px', color: '#000000' }} />
-                        </IconButton> 
-                    }
-                    title={plant.name}
-                    titleTypographyProps={{ variant: "h5" }}
-                    subheader={plant.taxonomy}
-                    subheaderTypographyProps={{ variant: "h6" }}
-                    style={{ justifyContent: 'center' }}
-                />
-                <Menu
-                    anchorEl={anchorEl}
-                    open={Boolean(anchorEl)}
-                    keepMounted
-                    onClose={handleMenuClose}
-                >
-                    <MenuItem onClick={() => handleEdit(plant)} style={{ fontSize: '22px' }}>Edit</MenuItem>
-                    <MenuItem onClick={() => handleDeleteModalOpen} style={{ fontSize: '22px' }}>Delete</MenuItem>
-                </Menu>
-                {editRedirect ? <Redirect to='/plant' /> : ''}
-                <Dialog open={dialogOpen} onClose={handleDeleteModalClose}>
-                    <DialogTitle>
-                        Are you sure you want to delete this plant?
-                    </DialogTitle>
-                    <div className={classes.modalButtons}>
-                        <Button className={classes.deleteButton} variant='contained' color='secondary' onClick={() => handleDelete(plant._id)}>
-                            <DeleteForeverIcon />
-                            Delete
-                        </Button>
-                        <Button className={classes.cancelButton} variant='outlined' color='secondary'>
-                            Cancel
-                        </Button>
-                    </div>
-                </Dialog>
-                <CardMedia
-                    className={classes.image}
-                    image={`${plant.images[0]}`}
-                    style={{ height: '800px' }}
-                />
-                <CardContent>
-                    <Typography style={{ fontSize: '20px' }} color="textPrimary" component="p">
-                        {plant.description}
-                    </Typography>
-                </CardContent>
-                <CardActions disableSpacing>
-                    <IconButton aria-label="add to favorites">
-                        <FavoriteIcon style={{ fontSize: '35px' }} />
-                    </IconButton>
-                    <IconButton aria-label="share">
-                        <AddIcon style={{ fontSize: '35px' }} />
-                    </IconButton>
-                    <IconButton
-                        className={clsx(classes.expand, {
-                            [classes.expandOpen]: expanded,
-                        })}
-                        onClick={() => handleExpandClick(index)}
-                        aria-expanded={expanded === index}
-                        aria-label="show more"
+            <>
+                <Card className={classes.card}>
+                    <CardHeader 
+                        avatar={
+                            <Avatar className={classes.avatar} style={{ width: '70px', height: '70px', marginRight: '20px', backgroundColor: "#4caf50" }}>
+                                <FontAwesomeIcon className={classes.seedling} icon={faSeedling} size="2x" />
+                            </Avatar>
+                        }
+                        action={
+                            <IconButton onClick={handleMenuOpen} style={{ marginTop: '14px' }}>
+                                <MoreVertIcon style={{ fontSize: '35px', color: '#000000' }} />
+                            </IconButton> 
+                        }
+                        title={plant.name}
+                        titleTypographyProps={{ variant: "h5" }}
+                        subheader={plant.taxonomy}
+                        subheaderTypographyProps={{ variant: "h6" }}
+                        style={{ justifyContent: 'center' }}
+                    />
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        keepMounted
+                        onClose={() => handleMenuClose()}
                     >
-                        <ExpandMoreIcon style={{ fontSize: '40px', color: '#000000' }} />
-                    </IconButton>
-                </CardActions>
-                <Collapse in={expanded === index} timeout="auto" unmountOnExit>
+                        <MenuItem onClick={() => handleEdit(plant)} style={{ fontSize: '22px' }}>Edit</MenuItem>
+                        <MenuItem onClick={() => handleDeleteModalOpen(plant._id)} style={{ fontSize: '22px' }}>Delete</MenuItem>
+                    </Menu>
+                    <CardMedia
+                        className={classes.image}
+                        image={`${plant.images[0]}`}
+                        style={{ height: '800px' }}
+                    />
                     <CardContent>
-                        <Typography className={classes.plantCardTitle} variant="h6">The 411:</Typography>
-                        <div className={classes.light}>
-                            <div className={classes.lightTitle}>
-                                <WbSunnyIcon className={classes.sun} />
-                                <Typography variant="h6">
-                                    Light Requirements
-                                </Typography>
-                            </div>
-                            <Typography style={{ fontSize: '18px' }}>
-                                {plant.light}
-                            </Typography>
-                        </div>
-                        <div className={classes.water}>
-                            <div className={classes.waterTitle}>
-                                <FontAwesomeIcon className={classes.drop} icon={faTint} />
-                                <Typography variant="h6">
-                                    Keeping it Hydrated
-                                </Typography>
-                            </div>
-                            <Typography style={{ fontSize: '18px' }}>
-                                {plant.water}
-                            </Typography>
-                        </div>
-                        <div className={classes.humidity}>
-                            <div className={classes.humidityTitle}>
-                                <CloudIcon className={classes.waterIcon} />
-                                <Typography variant="h6">
-                                    Optimal Humidity
-                                </Typography>
-                            </div>
-                            <Typography style={{ fontSize: '18px' }}>
-                                {plant.humidity}
-                            </Typography>
-                        </div>
-                        <div className={classes.temperature}>
-                            <div className={classes.temperatureTitle}>
-                                <FontAwesomeIcon className={classes.thermometer} icon={faThermometerThreeQuarters} />
-                                <Typography variant="h6">
-                                    Preferred Climate
-                                </Typography>
-                            </div>
-                            <Typography style={{ fontSize: '18px' }}>
-                                {plant.temperature}
-                            </Typography>
-                        </div>
-                        <div className={classes.food}>
-                            <div className={classes.foodTitle}>
-                                <RestaurantIcon className={classes.utensils} />
-                                <Typography variant="h6">
-                                    Feeding your {plant.name}
-                                </Typography>
-                            </div>
-                            <Typography style={{ fontSize: '18px' }}>
-                                {plant.food}
-                            </Typography>
-                        </div>
-                        <div className={classes.additional}>
-                            <div className={classes.additionalTitle}>
-                                <AddCircleIcon className={classes.addCircle} />
-                                <Typography variant="h6">
-                                    Other Things to Note
-                                </Typography>
-                            </div>
-                            <Typography style={{ fontSize: '18px' }}>
-                                {plant.additional}
-                            </Typography>
-                        </div>
-                        <div className={classes.suggestedProducts}>
-                            <Typography variant="h5">These Might Help:</Typography>
-                            <div className={classes.products}>
-                                {suggestedMap}
-                            </div>
-                        </div>
+                        <Typography style={{ fontSize: '20px' }} color="textPrimary" component="p">
+                            {plant.description}
+                        </Typography>
                     </CardContent>
-                </Collapse>
-            </Card>
+                    <CardActions disableSpacing>
+                        <IconButton aria-label="add to favorites">
+                            <FavoriteIcon style={{ fontSize: '35px' }} />
+                        </IconButton>
+                        <IconButton aria-label="share">
+                            <AddIcon style={{ fontSize: '35px' }} />
+                        </IconButton>
+                        <IconButton
+                            className={clsx(classes.expand, {
+                                [classes.expandOpen]: expanded,
+                            })}
+                            onClick={() => handleExpandClick(index)}
+                            aria-expanded={expanded === index}
+                            aria-label="show more"
+                        >
+                            <ExpandMoreIcon style={{ fontSize: '40px', color: '#000000' }} />
+                        </IconButton>
+                    </CardActions>
+                    <Collapse in={expanded === index} timeout="auto" unmountOnExit>
+                        <CardContent>
+                            <Typography className={classes.plantCardTitle} variant="h6">The 411:</Typography>
+                            <div className={classes.light}>
+                                <div className={classes.lightTitle}>
+                                    <WbSunnyIcon className={classes.sun} />
+                                    <Typography variant="h6">
+                                        Light Requirements
+                                    </Typography>
+                                </div>
+                                <Typography style={{ fontSize: '18px' }}>
+                                    {plant.light}
+                                </Typography>
+                            </div>
+                            <div className={classes.water}>
+                                <div className={classes.waterTitle}>
+                                    <FontAwesomeIcon className={classes.drop} icon={faTint} />
+                                    <Typography variant="h6">
+                                        Keeping it Hydrated
+                                    </Typography>
+                                </div>
+                                <Typography style={{ fontSize: '18px' }}>
+                                    {plant.water}
+                                </Typography>
+                            </div>
+                            <div className={classes.humidity}>
+                                <div className={classes.humidityTitle}>
+                                    <CloudIcon className={classes.waterIcon} />
+                                    <Typography variant="h6">
+                                        Optimal Humidity
+                                    </Typography>
+                                </div>
+                                <Typography style={{ fontSize: '18px' }}>
+                                    {plant.humidity}
+                                </Typography>
+                            </div>
+                            <div className={classes.temperature}>
+                                <div className={classes.temperatureTitle}>
+                                    <FontAwesomeIcon className={classes.thermometer} icon={faThermometerThreeQuarters} />
+                                    <Typography variant="h6">
+                                        Preferred Climate
+                                    </Typography>
+                                </div>
+                                <Typography style={{ fontSize: '18px' }}>
+                                    {plant.temperature}
+                                </Typography>
+                            </div>
+                            <div className={classes.food}>
+                                <div className={classes.foodTitle}>
+                                    <RestaurantIcon className={classes.utensils} />
+                                    <Typography variant="h6">
+                                        Feeding your {plant.name}
+                                    </Typography>
+                                </div>
+                                <Typography style={{ fontSize: '18px' }}>
+                                    {plant.food}
+                                </Typography>
+                            </div>
+                            <div className={classes.additional}>
+                                <div className={classes.additionalTitle}>
+                                    <AddCircleIcon className={classes.addCircle} />
+                                    <Typography variant="h6">
+                                        Other Things to Note
+                                    </Typography>
+                                </div>
+                                <Typography style={{ fontSize: '18px' }}>
+                                    {plant.additional}
+                                </Typography>
+                            </div>
+                            <div className={classes.suggestedProducts}>
+                                <Typography variant="h5">These Might Help:</Typography>
+                                <div className={classes.products}>
+                                    {suggestedMap}
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Collapse>
+                </Card>
+            </>
         );
     });
 
@@ -297,8 +287,22 @@ export const Plants = () => {
                         {plantCardMap}
                     </div>
                 </div>
+                <Dialog open={dialogOpen} onClose={() => handleDeleteModalClose()}>
+                    <DialogTitle>
+                        Are you sure you want to delete this plant?
+                    </DialogTitle>
+                    <div className={classes.modalButtons}>
+                        <Button className={classes.deleteButton} variant='contained' color='secondary' onClick={() => handleDelete()}>
+                            <DeleteForeverIcon />
+                            Delete
+                        </Button>
+                        <Button className={classes.cancelButton} variant='outlined' color='secondary' onClick={() => handleDeleteModalClose()}>
+                            Cancel
+                        </Button>
+                    </div>
+                </Dialog>
                 <Backdrop className={classes.backdrop} open={backdropOpen} style={{ zIndex: '9999' }}>
-                    <CircularProgress style={{ color: '#ffffff' }} size={60} thickness={4} />
+                    <CircularProgress style={{ color: '#ffffff'}} size={60} thickness={4} />
                 </Backdrop>
                 <Snackbar open={deleteSuccess} autoHideDuration={4000} anchorOrigin={{ vertical: 'top', horizontal: 'center' }} onClose={handleDeleteSuccessClose} style={{ zIndex: '10000' }}>
                     <Alert onClose={handleDeleteSuccessClose} severity="success">
@@ -310,6 +314,7 @@ export const Plants = () => {
                         Delete Failed
                     </Alert>
                 </Snackbar>
+                {editRedirect ? <Redirect to='/plant' /> : ''}
             </Layout>
         </>
     );
