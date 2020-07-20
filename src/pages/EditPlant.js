@@ -27,6 +27,7 @@ export const EditPlant = () => {
     const [temperature, setTemperature] = useState(plant.temperature);
     const [food, setFood] = useState(plant.food);
     const [additional, setAdditional] = useState(plant.additional);
+    const [favorite, setFavorite] = useState(plant.favorite);
     const [images, setImages] = useState(plant.images);
     const [suggested, setSuggested] = useState(plant.suggested);
     const [checkError, setCheckError] = useState(false);
@@ -81,7 +82,7 @@ export const EditPlant = () => {
         fetch((`${url}/${id}`), {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json'},
-            body: JSON.stringify({ name, taxonomy, description, light, water, humidity, temperature, food, additional, images, suggested }) })
+            body: JSON.stringify({ name, taxonomy, description, light, water, humidity, temperature, food, additional, favorite, images, suggested }) })
             .then(response => {
                 response.json();
                 localStorage.removeItem('plant');
@@ -104,17 +105,13 @@ export const EditPlant = () => {
                             <div className={classes.plantTitle}>
                                 <Typography variant="h3" style={{ fontWeight: '300' }}>{name}</Typography>
                             </div>
-                            {/* <img src={`${(JSON.parse(localStorage.getItem('plant')).plant).images[0]}`} /> */}
                         </div>
                         <div className={classes.plantForm}>
                             <TextField
                                 id="outlined-full-width"
                                 label="Name"
-                                // style={{ margin: 8, }}
-                                // placeholder={plant.name}
                                 value={name}
                                 onChange={({ target }) => setName(target.value)}
-                                // helperText="Full width!"
                                 fullWidth
                                 margin="normal"
                                 InputLabelProps={{
@@ -128,7 +125,6 @@ export const EditPlant = () => {
                                 style={{ marginTop: '20px' }}
                                 value={taxonomy}
                                 onChange={({ target }) => setTaxonomy(target.value)}
-                                // helperText="Full width!"
                                 fullWidth
                                 margin="normal"
                                 InputLabelProps={{
@@ -142,7 +138,6 @@ export const EditPlant = () => {
                                 style={{ marginTop: '20px' }}
                                 value={description}
                                 onChange={({ target }) => setDescription(target.value)}
-                                // helperText="Full width!"
                                 fullWidth
                                 multiline
                                 margin="normal"
@@ -157,7 +152,6 @@ export const EditPlant = () => {
                                 style={{ marginTop: '20px' }}
                                 value={light}
                                 onChange={({ target }) => setLight(target.value)}
-                                // helperText="Full width!"
                                 fullWidth
                                 multiline
                                 margin="normal"
@@ -172,7 +166,6 @@ export const EditPlant = () => {
                                 style={{ marginTop: '20px' }}
                                 value={water}
                                 onChange={({ target }) => setWater(target.value)}
-                                // helperText="Full width!"
                                 fullWidth
                                 multiline
                                 margin="normal"
@@ -187,7 +180,6 @@ export const EditPlant = () => {
                                 style={{ marginTop: '20px' }}
                                 value={humidity}
                                 onChange={({ target }) => setHumidity(target.value)}
-                                // helperText="Full width!"
                                 fullWidth
                                 multiline
                                 margin="normal"
@@ -202,7 +194,6 @@ export const EditPlant = () => {
                                 style={{ marginTop: '20px' }}
                                 value={temperature}
                                 onChange={({ target }) => setTemperature(target.value)}
-                                // helperText="Full width!"
                                 fullWidth
                                 multiline
                                 margin="normal"
@@ -217,7 +208,6 @@ export const EditPlant = () => {
                                 style={{ marginTop: '20px' }}
                                 value={food}
                                 onChange={({ target }) => setFood(target.value)}
-                                // helperText="Full width!"
                                 fullWidth
                                 multiline
                                 margin="normal"
@@ -232,7 +222,6 @@ export const EditPlant = () => {
                                 style={{ marginTop: '20px' }}
                                 value={additional}
                                 onChange={({ target }) => setAdditional(target.value)}
-                                // helperText="Full width!"
                                 fullWidth
                                 multiline
                                 margin="normal"
@@ -256,12 +245,12 @@ export const EditPlant = () => {
                     </div>
                     <div className={classes.submit}>
                         <div className={classes.submitButton}>
-                            <Button variant="contained" color="primary" onClick={() => {handleSubmit(plant._id)}}>
+                            <Button variant="contained" color="primary" style={{ fontSize: '20px' }} nClick={() => {handleSubmit(plant._id)}}>
                                 Save Changes
                             </Button>
                         </div>
                         <div className={classes.cencelButton}>
-                            <Button variant="outlined" color="primary" onClick={() => {handleCancel()}}>
+                            <Button variant="outlined" color="primary" style={{ fontSize: '20px' }} onClick={() => {handleCancel()}}>
                                 Cancel
                             </Button>
                         </div>
