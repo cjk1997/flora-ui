@@ -102,6 +102,19 @@ export const Plants = () => {
         setBackdropOpen(false);
     };
 
+    const handleFavorite = (id, favorite) => {
+        setBackdropOpen(true);
+
+        const url = process.env.REACT_APP_PLANTS_URL;
+        fetch(`${url}/${id}/${!Boolean(favorite)}`, {
+            method : 'PATCH',
+            headers : { 'Content-Type' : 'application/json' } })
+            .then(response => response.json())
+            .then(setBackdropOpen(false))
+            .then(window.location.reload(false))
+            .catch(err => err);
+    };
+
     const handleDelete = () => {
         setDialogOpen(false);
         setBackdropOpen(true);
@@ -180,11 +193,8 @@ export const Plants = () => {
                         </Typography>
                     </CardContent>
                     <CardActions disableSpacing>
-                        <IconButton aria-label="add to favorites">
-                            <FavoriteIcon style={{ fontSize: '35px' }} />
-                        </IconButton>
-                        <IconButton aria-label="share">
-                            <AddIcon style={{ fontSize: '35px' }} />
+                        <IconButton aria-label="add to favorites" onClick={() => handleFavorite(plant._id, plant.favorite)}>
+                            <FavoriteIcon style={{ color: plant.favorite === true ? '#f44336' : '#000000', '&:hover': {color: '#f44336'}, fontSize: '35px' }} />
                         </IconButton>
                         <IconButton
                             className={clsx(classes.expand, {
@@ -287,16 +297,16 @@ export const Plants = () => {
                         {plantCardMap}
                     </div>
                 </div>
-                <Dialog open={dialogOpen} onClose={() => handleDeleteModalClose()}>
+                <Dialog className={classes.deleteDialog} open={dialogOpen} onClose={() => handleDeleteModalClose()}>
                     <DialogTitle>
                         Are you sure you want to delete this plant?
                     </DialogTitle>
                     <div className={classes.modalButtons}>
-                        <Button className={classes.deleteButton} variant='contained' color='secondary' onClick={() => handleDelete()}>
+                        <Button className={classes.deleteButton} variant='contained' color='secondary' style={{ fontSize: '15px' }} onClick={() => handleDelete()}>
                             <DeleteForeverIcon />
                             Delete
                         </Button>
-                        <Button className={classes.cancelButton} variant='outlined' color='secondary' onClick={() => handleDeleteModalClose()}>
+                        <Button className={classes.cancelButton} variant='outlined' color='secondary' style={{ fontSize: '15px' }} onClick={() => handleDeleteModalClose()}>
                             Cancel
                         </Button>
                     </div>
