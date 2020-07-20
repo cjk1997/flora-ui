@@ -7,20 +7,14 @@ import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-// import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-// import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import Backdrop from '@material-ui/core/Backdrop';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSeedling } from '@fortawesome/free-solid-svg-icons'
 import { faShoppingBasket } from '@fortawesome/free-solid-svg-icons'
-import { faUser } from '@fortawesome/free-solid-svg-icons'
-import { faGift } from '@fortawesome/free-solid-svg-icons'
 
 export const Layout = ({ children }) => {
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -52,10 +46,10 @@ export const Layout = ({ children }) => {
                 classes={{paper: clsx({[classes.drawerOpen]: drawerOpen,
                     [classes.drawerClose]: !drawerOpen,
                 }),}}
+                style={{ zIndex: '10000'}}
             >
                 <div className={classes.toolbar}>
                     <IconButton onClick={toggleDrawer} className={classes.chevron}>
-                        {/* {theme.direction === 'rtl' ? <ChevronRightIcon style={{ fontSize: '35', color: 'black' }} /> : <ChevronLeftIcon style={{ fontSize: '35', color: 'black' }} />} */}
                         <ChevronLeftIcon style={{ fontSize: '35', color: '#000000' }} />
                     </IconButton>
                 </div>
@@ -71,17 +65,8 @@ export const Layout = ({ children }) => {
                     </ListItem>
                 </List>
                 <Divider />
-                <List style={{ width: '250' }}>
-                    <ListItem button className={classes.listButtons}>
-                        <FontAwesomeIcon icon={faUser} className={classes.itemIcon}/>
-                        <Typography variant="h5">Profile</Typography>
-                    </ListItem>
-                    <ListItem button className={classes.listButtons}>
-                        <FontAwesomeIcon icon={faGift} className={classes.itemIcon}/>
-                        <Typography variant="h5">Your Jungle</Typography>
-                    </ListItem>
-                </List>
             </Drawer>
+            <Backdrop className={classes.backdrop} open={drawerOpen} style={{ zIndex: '9999' }} />
             <main className={classes.content}>
                 {children}
             </main>
